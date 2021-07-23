@@ -22,16 +22,16 @@ export class Generator {
     this.parser = new Parser(config);
   }
 
-  public generate(): void {
+  public async generate(): Promise<void> {
     const filenames = glob.sync(this.config.input, { ignore: this.config.exclude });
 
     for (let i = 0; i < filenames.length; i++) {
       const filename = filenames[i];
-      this.process(filename);
+      await this.process(filename);
     }
   }
 
-  private async process(markdownFilePath: string) {
+  private async process(markdownFilePath: string): Promise<void> {
     const markdown = (await readFile(markdownFilePath)).toString();
     const parseResult = await this.parser.parse(markdown);
     const contentHtml = parseResult.html;
@@ -72,7 +72,10 @@ export class Generator {
       }
 
       const targetPath = join(outputDirectory, path);
-      await copyFile(path, targetPath);
+
+      if (!existsSync(targetPath)) {
+        await copyFile(path, targetPath);
+      }
     }
   }
 }

@@ -59,5 +59,6 @@ const config: GeneratorConfig = {
   template: argv['template'],
 };
 
-const generator = new Generator(config);
-generator.generate();
+new Generator(config).generate().catch(error => {
+  console.error(`ERROR: ${error}`);
+});
