@@ -1,0 +1,42 @@
+{
+  "name": "docsmd",
+  "version": "0.0.1",
+  "description": "Markdown to HTML generator that converts README.md (and other .md files) to HTML using node.js",
+  "main": "./build/index.js",
+  "bin": "./build/cli.js",
+  "type": "commonjs",
+  "dependencies": {
+    "glob": "^7.1.7",
+    "handlebars": "^4.7.7",
+    "highlight.js": "^11.1.0",
+    "marked": "^2.1.3",
+    "yargs": "^17.0.1"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.4",
+    "@types/highlight.js": "^10.1.0",
+    "@types/marked": "^2.0.4",
+    "@types/node": "^16.4.0",
+    "@types/yargs": "^17.0.2",
+    "eslint": "^7.31.0",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.3.5"
+  },
+  "scripts": {
+    "start": "tsc && node ./build/cli.js",
+    "build": "npm run clean && tsc",
+    "clean": "rimraf ./build && rimraf ./test/output",
+    "pack": "npm run build && npm pack",
+    "watch": "tsc --watch",
+    "test": "npm run build && cd test && node ../build/cli.js"
+  },
+  "keywords": [
+    "Markdown",
+    "HTML",
+    "Converter",
+    "Docs",
+    "Generator"
+  ],
+  "author": "Christian Kogler",
+  "license": "MIT"
+}
