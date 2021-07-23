@@ -18,11 +18,9 @@ jobs:
       - name: Setup environment
         uses: actions/setup-node@v2.3.0
         
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout
         uses: actions/checkout@v2
       
-      # Runs a single command using the runners shell
       - name: Build
         run: npm run build
 
@@ -31,3 +29,6 @@ jobs:
         with: 
           publish_command: "npm"
           publish_args: "--access public"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
