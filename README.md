@@ -83,9 +83,9 @@ Example file:
 ```json
 // docsmd.json
 {
-	input: '**/*.md',
-    output: 'docs',
-    template: 'docs-template.html'
+  "input": "**/*.md",
+  "output": "docs",
+  "template": "docs-template.html"
 }
 ```
 
@@ -104,17 +104,17 @@ docsMD uses [Handlebars](https://handlebarsjs.com/) internally to apply the temp
 
 ```html
 <html>
-	<head>
-		<title>{{ filename }}</title>
-	</head>
-	<body>
-		<div>Some header.</div>
-		<div>
-            <!-- make sure to use triple braces for the content, so HTML is not escaped! -->
-			{{{ content }}}
-		</div>
-		<div>Some footer.</div>
-	</body>
+  <head>
+    <title>{{ filename }}</title>
+    </head>
+    <body>
+    <div>Some header.</div>
+    <div>
+      <!-- make sure to use triple braces for the content, so HTML is not escaped! -->
+      {{{ content }}}
+    </div>
+    <div>Some footer.</div>
+  </body>
 </html>
 ```
 
