@@ -11,7 +11,7 @@ docsMD is a Markdown to HTML generator that converts your README.md (and other .
 Install docsMD
 
 ```bash
-$ npm install -g docsmd
+$ npm install -g @ckogler/docsmd
 ```
 
 Run from the command line:
