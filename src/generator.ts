@@ -33,6 +33,7 @@ export class Generator {
   }
 
   private async process(markdownFilePath: string): Promise<void> {
+
     const outputFilepath = this.getOutputFilePath(this.config.output, markdownFilePath);
     const parseResult = await this.parser.parse(markdownFilePath);
     const contentHtml = parseResult.html;
@@ -47,6 +48,11 @@ export class Generator {
   }
 
   private getOutputFilePath(outputRoot: string, originalPath: string): string {
+
+    while (originalPath.startsWith("..")) {
+      originalPath = originalPath.substr(3);
+    }
+
     const markdownFilename = basename(originalPath);
     const markdownRelativeDirectory = dirname(originalPath);
 
