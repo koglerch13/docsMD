@@ -10,6 +10,7 @@ export interface GeneratorConfig {
   exclude: string;
   output: string;
   highlight: boolean;
+  inline: boolean;
   template?: string;
 }
 
@@ -32,12 +33,13 @@ export class Generator {
   }
 
   private async process(markdownFilePath: string): Promise<void> {
-    const markdown = (await readFile(markdownFilePath)).toString();
-    const parseResult = await this.parser.parse(markdown);
+
+    const outputFilepath = this.getOutputFilePath(this.config.output, markdownFilePath);
+    const parseResult = await this.parser.parse(markdownFilePath);
     const contentHtml = parseResult.html;
     const filename = basename(markdownFilePath).replace('.md', '');
     const html = this.templater.create({ content: contentHtml, filename: filename });
-    const outputFilepath = this.getOutputFilePath(this.config.output, markdownFilePath);
+    
     await writeFile(outputFilepath, html);
 
     const filedirectory = dirname(markdownFilePath);
@@ -46,6 +48,11 @@ export class Generator {
   }
 
   private getOutputFilePath(outputRoot: string, originalPath: string): string {
+
+    while (originalPath.startsWith("..")) {
+      originalPath = originalPath.substr(3);
+    }
+
     const markdownFilename = basename(originalPath);
     const markdownRelativeDirectory = dirname(originalPath);
 

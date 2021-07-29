@@ -1,15 +1,25 @@
-import { parse } from 'marked';
+import { existsSync } from 'fs';
+import { readFile } from 'fs/promises';
 import marked = require('marked');
+import { dirname, join } from 'path';
 const hljs = require('highlight.js'); // TODO convert to import somehow...
 
 export interface ParserConfig {
   highlight: boolean;
+  inline: boolean;
 }
 
 export interface ParserResult {
   referencedImages: string[],
   html: string
 }
+
+export class TokenReplacement {
+  constructor(public tokenList: any[], public token: any, public relativePath: string, public filePathToInclude: string) {
+
+  }
+}
+
 
 export class Parser {
   private defaultRenderer: marked.Renderer;
@@ -18,7 +28,26 @@ export class Parser {
     this.defaultRenderer = new marked.Renderer();
   }
 
-  parse(markdown: string): Promise<ParserResult> {
+  getReplacement(parentToken: any, parentList: any[], inputDirectory: string): TokenReplacement | null {
+
+    if (parentToken.type == 'paragraph' && parentToken.tokens && parentToken.tokens.length > 0)
+    {
+      let token = parentToken.tokens[0];
+      if (token.type == 'link')  {
+        if (token.text == '#') {
+
+          let includedFile = join(inputDirectory, token.href);
+          if (existsSync(includedFile)) {
+            return new TokenReplacement(parentList, parentToken, token.href, includedFile);
+          }
+        }
+      }
+    }
+    
+    return null;
+  }
+
+  async parse(markdownFilePath: string): Promise<ParserResult> {
     const referencedImages: string[] = [];
 
     const renderer = new marked.Renderer();
@@ -33,16 +62,71 @@ export class Parser {
       options.highlight = (code, lang, callback) => this.highlight(code, lang, callback)
     }
 
-    return new Promise((resolve, reject) => {
-      parse(markdown, options, (error, result) => {
-        if (error) {
-          reject(error);
-          return;
-        }
+    const tokens = await this.tokenize(markdownFilePath);
+    const result = marked.parser(tokens, options);
+    return { html: result, referencedImages: referencedImages };
+  }
 
-        resolve({ html: result, referencedImages: referencedImages });
-      });
-    });
+
+  joinUrls(base: string, second: string): string {
+    if (this.isAbsoluteUrl(second))  {
+      return second;
+    }
+
+    if (base.endsWith('/')) {
+      return base + second;
+    }
+
+    return base + '/' + second;
+  }
+
+  fixLinksAndImagesForChildPage(tokenList: marked.TokensList, relativePathOfIncludedPage: string) {
+
+    let relativeDir = dirname(relativePathOfIncludedPage);
+
+    marked.walkTokens(tokenList, x => {
+      if (x.type == 'link') {
+          x.href = this.joinUrls(relativeDir, x.href);
+      } 
+      else if (x.type == 'image') {
+          x.href = this.joinUrls(relativeDir, x.href);
+      }
+    })
+  }
+  
+  async tokenize(markdownFilePath: string): Promise<marked.TokensList> {
+    
+    const markdown = (await readFile(markdownFilePath)).toString();
+    const tokens = marked.lexer(markdown);
+    
+
+    // we perform the action at the lexer step because only here we can recursively iterate all children
+    // in the parser step we already have finished html. This has 2 problems
+    // 1.) we need to specify the exact order how to traverse all pages (which is quasi-impossible)
+    // 2.) we would need parse the HTML again to fix links etc. 
+    if (this.config.inline) {
+
+      const inputFileDirectory = dirname(markdownFilePath);
+      let replacements: TokenReplacement[] = [];
+
+      for (let i = 0; i < tokens.length; i++) {
+        let replacement = this.getReplacement(tokens[i], tokens, inputFileDirectory);
+        replacement && replacements.push(replacement);
+      }
+
+      for (let replacement of replacements) {
+        let idx = replacement.tokenList.indexOf(replacement.token);
+        let innerResult = await this.tokenize(replacement.filePathToInclude);
+        
+        this.fixLinksAndImagesForChildPage(innerResult, replacement.relativePath);
+        replacement.tokenList.splice(idx, 1);
+        for (let childIdx = 0; childIdx < innerResult.length; childIdx++) {
+          replacement.tokenList.splice(idx+childIdx, 0, innerResult[childIdx]);
+        }
+      }
+    }
+
+    return tokens;
   }
 
   private highlight(code: string, lang: string, callback?: (error: any | undefined, code?: string) => void) {
