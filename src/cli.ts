@@ -57,6 +57,7 @@ const config: GeneratorConfig = {
   output: argv['output'],
   highlight: argv['highlight'],
   template: argv['template'],
+  inline: true
 };
 
 new Generator(config).generate().catch(error => {
