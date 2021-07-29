@@ -60,17 +60,22 @@ Images with a relative URL will be copied to the same relative location in the o
 
 If a link leads to a relative path and ends with ".md", the ending will be replaced with ".html". That way if you can link between .md files will also work in the generated HTML. Absolute links will not be touched.
 
+### Inline support
+
+When genering a single-file documentation the content of multiple individual files might need to be merged together. This is supported by addding a link to the markdown file to include with a text set to '#'. This feature can be disabled with the `--inline` option.
+
 ## Configuration
 
 ### Parameters
 
 | Parameter            | Explanation                                                  |
 | -------------------- | ------------------------------------------------------------ |
-| `-i` / `--input`     | The files to convert. Supports the *glob* pattern. Defaults to `**/*.md` |
-| `-e / --exclude`     | Excludes the matching files from the 'input' parameter. Defaults to `node_modules/**` |
-| `-o`  / `--output`   | The directory where the generated HTML files will be placed. Defaults to `./docs` |
-| `-h` / `--highlight` | Can be `true` or `false`. Determines whether highlight.js will be applied to source code. Defaults to `true` |
-| `-t` / `--template`  | Can be used to specify a template file. If none is specified, the included default style will be used. |
+| `--input`     | The files to convert. Supports the *glob* pattern. Defaults to `**/*.md` |
+| `--exclude`     | Excludes the matching files from the 'input' parameter. Defaults to `node_modules/**` |
+| `--output`   | The directory where the generated HTML files will be placed. Defaults to `./docs` |
+| `--highlight` | Can be `true` or `false`. Determines whether highlight.js will be applied to source code. Defaults to `true` |
+| `--inline` | Can be `true` or `false`. Determines whether links with a text set to '#' will be replaced with the included markdown content.  |
+| `--template`  | Can be used to specify a template file. If none is specified, the included default style will be used. |
 
 ### Config file
 

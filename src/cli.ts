@@ -7,31 +7,31 @@ import { Generator, GeneratorConfig } from './generator';
 
 let yarg = yargs(hideBin(process.argv))
   .option('input', {
-    alias: 'i',
     type: 'string',
     description: 'The files to convert. Supports the glob pattern',
     default: '**/*.md'
   })
   .option('exclude', {
-    alias: 'e',
     type: 'string',
     description: 'Ignores matching files from input. Supports the glob pattern.',
     default: 'node_modules/**'
   })
   .option('output', {
-    alias: 'o',
     type: 'string',
     description: 'The directory where the generated HTML files will be placed.',
     default: './docs'
   })
   .option('highlight', {
-    alias: 'h',
     type: 'boolean',
     description: 'Determines whether highlight.js will be applied to source code',
     default: true
   })
+  .option('inline', {
+    type: 'boolean',
+    description: 'Determines whether links to markdown files with a text set to "#" will be included in the parent page',
+    default: true
+  })
   .option('template', {
-    alias: 't',
     type: 'string',
     description: 'Can be used to specify a template file. If none is specified the included default style will be used.'
   });
@@ -57,7 +57,7 @@ const config: GeneratorConfig = {
   output: argv['output'],
   highlight: argv['highlight'],
   template: argv['template'],
-  inline: true
+  inline: argv['inline']
 };
 
 new Generator(config).generate().catch(error => {
