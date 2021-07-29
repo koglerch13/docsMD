@@ -129,23 +129,22 @@ export class Parser {
     return tokens;
   }
 
-  private highlight(code: string, lang: string, callback?: (error: any | undefined, code?: string) => void) {
-    if (!callback) {
-      throw new Error('No callback provided');
-    }
+  private highlight(code: string, lang: string, callback?: (error: any | undefined, code?: string) => void) : string | void {
 
-    if (!lang || !hljs.getLanguage(lang)) {
-      callback(null, code);
-      return;
+    let result = null;
+    if (lang && hljs.getLanguage(lang)) {
+      try {
+        const temp = hljs.highlight(code, { language: lang });
+        result = temp.value;
+      } catch {
+        result = code;
+      }
     }
-
-    try {
-      const result = hljs.highlight(code, { language: lang });
-      callback(null, result.value);
-    } catch {
-      callback(null, code);
-      return;
-    }
+   
+    if (callback)
+      callback(null, result);
+    else
+      return result;
   }
 
   private renderLink(href: string | null, title: string | null, text: string): string {
