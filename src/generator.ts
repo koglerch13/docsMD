@@ -70,7 +70,7 @@ export class Generator {
     return outputFilepath;
   }
 
-  private async copyImages(paths: string[], outputDirectory: string) {
+ private async copyImages(paths: string[], outputDirectory: string) {
     for (let i = 0; i < paths.length; i++) {
       const path = paths[i];
       if (!existsSync(path)) {
@@ -81,8 +81,18 @@ export class Generator {
       const targetPath = join(outputDirectory, path);
 
       if (!existsSync(targetPath)) {
+        this.ensureDirectoryExistence(targetPath);
         await copyFile(path, targetPath);
       }
     }
+  }
+
+  private ensureDirectoryExistence(filePath: string): void {
+    var dirname = path.dirname(filePath);
+    if (existsSync(dirname)) {
+      return;
+    }
+    this.ensureDirectoryExistence(dirname);
+    mkdirSync(dirname);
   }
 }
