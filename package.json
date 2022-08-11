@@ -1,6 +1,6 @@
 {
   "name": "@ckogler/docsmd",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Markdown to HTML generator that converts README.md (and other .md files) to HTML using node.js",
   "repository": "https://github.com/koglerch13/docsMD",
   "main": "./build/index.js",
