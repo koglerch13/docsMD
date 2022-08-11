@@ -88,11 +88,11 @@ export class Generator {
   }
 
   private ensureDirectoryExistence(filePath: string): void {
-    var dirname = path.dirname(filePath);
-    if (existsSync(dirname)) {
+    var directoryName = dirname(filePath);
+    if (existsSync(directoryName)) {
       return;
     }
-    this.ensureDirectoryExistence(dirname);
-    mkdirSync(dirname);
+    this.ensureDirectoryExistence(directoryName);
+    mkdirSync(directoryName);
   }
 }
