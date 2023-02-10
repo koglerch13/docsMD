@@ -16,6 +16,7 @@ export class Templater {
   }
 
   create(context: TemplateContext): string {
+    context.content += "Hugo";
     return this.template(context);
   }
 
