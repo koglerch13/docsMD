@@ -22,10 +22,11 @@ jobs:
       
       - name: Build
         run: npm run build
-      - name: Debug Version
-        run: echo ${{ github.event.release.tag_name }}
 
-      # - name: Publish
-      #   run: npm publish
-      #   env:
-      #     NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      - name: Update Version
+        run: npm version ${{ github.event.release.tag_name }}
+
+      - name: Publish
+        run: npm publish --dry-run
+        env:
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
