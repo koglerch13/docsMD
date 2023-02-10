@@ -14,7 +14,7 @@ export interface ParserResult {
   html: string
 }
 
-export class TokenReplacement {
+class TokenReplacement {
   constructor(public tokenList: any[], public token: any, public relativePath: string, public filePathToInclude: string) {
 
   }
@@ -26,25 +26,6 @@ export class Parser {
 
   constructor(private config: ParserConfig) {
     this.defaultRenderer = new marked.Renderer();
-  }
-
-  getReplacement(parentToken: any, parentList: any[], inputDirectory: string): TokenReplacement | null {
-
-    if (parentToken.type == 'paragraph' && parentToken.tokens && parentToken.tokens.length > 0)
-    {
-      let token = parentToken.tokens[0];
-      if (token.type == 'link')  {
-        if (token.text == '#') {
-
-          let includedFile = join(inputDirectory, token.href);
-          if (existsSync(includedFile)) {
-            return new TokenReplacement(parentList, parentToken, token.href, includedFile);
-          }
-        }
-      }
-    }
-    
-    return null;
   }
 
   async parse(markdownFilePath: string): Promise<ParserResult> {
@@ -67,8 +48,27 @@ export class Parser {
     return { html: result, referencedImages: referencedImages };
   }
 
+  private getReplacement(parentToken: any, parentList: any[], inputDirectory: string): TokenReplacement | null {
 
-  joinUrls(base: string, second: string): string {
+    if (parentToken.type == 'paragraph' && parentToken.tokens && parentToken.tokens.length > 0)
+    {
+      let token = parentToken.tokens[0];
+      if (token.type == 'link')  {
+        if (token.text == '#') {
+
+          let includedFile = join(inputDirectory, token.href);
+          if (existsSync(includedFile)) {
+            return new TokenReplacement(parentList, parentToken, token.href, includedFile);
+          }
+        }
+      }
+    }
+    
+    return null;
+  }
+
+
+  private joinUrls(base: string, second: string): string {
     if (this.isAbsoluteUrl(second))  {
       return second;
     }
@@ -80,7 +80,7 @@ export class Parser {
     return base + '/' + second;
   }
 
-  fixLinksAndImagesForChildPage(tokenList: marked.TokensList, relativePathOfIncludedPage: string) {
+  private fixLinksAndImagesForChildPage(tokenList: marked.TokensList, relativePathOfIncludedPage: string) {
 
     let relativeDir = dirname(relativePathOfIncludedPage);
 
@@ -94,7 +94,7 @@ export class Parser {
     })
   }
   
-  async tokenize(markdownFilePath: string): Promise<marked.TokensList> {
+  private async tokenize(markdownFilePath: string): Promise<marked.TokensList> {
     
     const markdown = (await readFile(markdownFilePath)).toString();
     const tokens = marked.lexer(markdown);
