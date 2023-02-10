@@ -1,4 +1,4 @@
 node_modules/
 build/
-test/output/
-
+verification-test/output
+.DS_Store

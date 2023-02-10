@@ -25,11 +25,12 @@
   },
   "scripts": {
     "start": "tsc && node ./build/cli.js",
-    "build": "npm run clean && tsc",
-    "clean": "rimraf ./build && rimraf ./test/output",
+    "build": "npm run clean-build && tsc",
+    "clean-build": "rimraf ./build",
+    "clean-test": "rimraf ./verification-test/output",
     "pack": "npm run build && npm pack",
     "watch": "tsc --watch",
-    "test": "npm run build && cd test && node ../build/cli.js"
+    "test": "npm run clean-test && cd verification-test && node test.js"
   },
   "keywords": [
     "Markdown",

@@ -1,6 +1,8 @@
 name: CI
 
-on: [push]
+on:
+  release:
+    types: [published]
 
 jobs:
   build:
@@ -23,3 +25,11 @@ jobs:
       
       - name: Test
         run: npm run test
+
+      - name: Update Version
+        run: npm version ${{ github.event.release.tag_name }} ----no-git-tag-version
+
+      - name: Publish
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
